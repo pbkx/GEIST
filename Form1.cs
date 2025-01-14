@@ -15,6 +15,19 @@ namespace GEIST
         public Form1()
         {
             InitializeComponent();
+
+            searchBox = new TextBox
+            {
+                Text = "Search here!",
+                ForeColor = Color.Gray,
+                Width = 1067,
+                Location = new Point(132, 3)
+            };
+
+            searchBox.Enter += searchBox_Enter;
+            searchBox.Leave += searchBox_Leave;
+
+            Controls.Add(searchBox);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -35,6 +48,29 @@ namespace GEIST
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void searchBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void searchBox_Enter(object sender, EventArgs e)
+        {
+            if (searchBox.Text == "Search here!")
+            {
+                searchBox.Text = "";
+                searchBox.ForeColor = Color.White;
+            }
+        }
+
+        private void searchBox_Leave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(searchBox.Text))
+            {
+                searchBox.Text = "Search here!";
+                searchBox.ForeColor = Color.Gray;
+            }
         }
     }
 }
