@@ -18,9 +18,9 @@ namespace GEIST
 
             searchBox = new TextBox
             {
-                Text = "Search here!",
+                Text = "Search here...",
                 ForeColor = Color.Gray,
-                Width = 1067,
+                Width = 1090,
                 Location = new Point(132, 3)
             };
 
@@ -57,10 +57,10 @@ namespace GEIST
 
         private void searchBox_Enter(object sender, EventArgs e)
         {
-            if (searchBox.Text == "Search here!")
+            if (searchBox.Text == "Search here...")
             {
                 searchBox.Text = "";
-                searchBox.ForeColor = Color.White;
+                searchBox.ForeColor = Color.Black;
             }
         }
 
@@ -68,7 +68,7 @@ namespace GEIST
         {
             if (string.IsNullOrWhiteSpace(searchBox.Text))
             {
-                searchBox.Text = "Search here!";
+                searchBox.Text = "Search here...";
                 searchBox.ForeColor = Color.Gray;
             }
         }

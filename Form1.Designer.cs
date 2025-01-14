@@ -88,12 +88,13 @@
             this.searchBox.BackColor = System.Drawing.Color.Black;
             this.searchBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.searchBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.searchBox.ForeColor = System.Drawing.Color.White;
+            this.searchBox.ForeColor = System.Drawing.Color.Transparent;
             this.searchBox.Location = new System.Drawing.Point(132, 3);
             this.searchBox.Name = "searchBox";
             this.searchBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.searchBox.Size = new System.Drawing.Size(1067, 20);
             this.searchBox.TabIndex = 4;
+            this.searchBox.Text = "  🔍  Search";
             this.searchBox.TextChanged += new System.EventHandler(this.searchBox_TextChanged);
             // 
             // Form1
@@ -103,10 +104,10 @@
             this.BackColor = System.Drawing.Color.White;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(1220, 639);
-            this.Controls.Add(this.searchBox);
             this.Controls.Add(this.titleBox);
             this.Controls.Add(this.logoImage);
             this.Controls.Add(this.pictureBox2);
+            this.Controls.Add(this.searchBox);
             this.ForeColor = System.Drawing.Color.Transparent;
             this.Name = "Form1";
             this.Text = "Form1";
