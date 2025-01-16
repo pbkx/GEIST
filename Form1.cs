@@ -18,10 +18,13 @@ namespace GEIST
 
             searchBox = new TextBox
             {
-                Text = "Search here...",
+                Text = "Search Income/Expense Data",
                 ForeColor = Color.Gray,
-                Width = 1090,
-                Location = new Point(132, 3)
+                BackColor = Color.Black,
+                BorderStyle = BorderStyle.Fixed3D,
+                Width = 1047,
+                
+                Location = new Point(167, 3)
             };
 
             searchBox.Enter += searchBox_Enter;
@@ -57,10 +60,10 @@ namespace GEIST
 
         private void searchBox_Enter(object sender, EventArgs e)
         {
-            if (searchBox.Text == "Search here...")
+            if (searchBox.Text == "Search Income/Expense Data")
             {
                 searchBox.Text = "";
-                searchBox.ForeColor = Color.Black;
+                searchBox.ForeColor = Color.White;
             }
         }
 
@@ -68,9 +71,19 @@ namespace GEIST
         {
             if (string.IsNullOrWhiteSpace(searchBox.Text))
             {
-                searchBox.Text = "Search here...";
+                searchBox.Text = "🔍 Search Income/Expense Data";
                 searchBox.ForeColor = Color.Gray;
             }
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox1_TextChanged_1(object sender, EventArgs e)
+        {
+
         }
     }
 }
