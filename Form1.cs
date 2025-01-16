@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Schema;
 
 namespace GEIST
 {
@@ -31,6 +32,8 @@ namespace GEIST
             searchBox.Leave += searchBox_Leave;
 
             Controls.Add(searchBox);
+
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.DrawLinesPoint);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -85,5 +88,59 @@ namespace GEIST
         {
 
         }
+
+        private Point[] graphPoints(object sender, EventArgs e, int[] amounts, int[] dates)
+        {
+
+            int mindate = int.MaxValue;
+            int maxdate = int.MinValue;
+
+            for (int i = 0; i < dates.Length; i++) {
+                if (dates[i] > maxdate) {
+                    maxdate = dates[i];
+                }
+                if (dates[i] < mindate) {
+                    mindate = dates[i];
+                }
+            }
+
+            int minamount = int.MaxValue;
+            int maxamount = int.MinValue;
+
+            for (int i = 0; i < amounts.Length; i++) {
+                if (amounts[i] > maxamount)
+                {
+                    maxamount = amounts[i];
+                }
+                if (amounts[i] < minamount)
+                {
+                    minamount = amounts[i];
+                }
+            }
+
+
+            
+           // Point[] points = 
+                
+            return null;
+        }
+        
+        private void DrawLinesPoint(object sender, PaintEventArgs e)
+        {
+            Pen pen = new Pen(Color.Red, 1);
+
+            // Create array of points that define lines to draw.
+            Point[] points =
+                        {
+            new Point(150, 600),
+            new Point(300, 560),
+            new Point(450, 580),
+            new Point(600, 590)
+        };
+
+            //Draw lines to screen.
+            e.Graphics.DrawLines(pen, points);
+        }
+
     }
 }
