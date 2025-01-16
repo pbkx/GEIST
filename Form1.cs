@@ -119,7 +119,7 @@ namespace GEIST
             }
 
 
-            
+            // CHECK DESMOS
            // Point[] points = 
                 
             return null;
