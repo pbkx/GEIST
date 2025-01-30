@@ -123,7 +123,6 @@ namespace GEIST
                 }
             }
 
-
             double[] scaledDates = new double[dates.Length];
 
 
@@ -161,15 +160,10 @@ namespace GEIST
         {
             Pen pen = new Pen(Color.Red, 2);
 
-            int[] d = { 5, 10, 15, 20, 25 };
-            int[] a = { 100, 10, 200, 5, 300 };
+            int[] d = { 5, 10, 15, 20, 25,30,35,40,45,50,55,60,65,70,75,80,85,90 };
+            int[] a = { 100, 10, 200, 5, 3000, 500, 1235, 4,195,238,1123,1239,844, 600,500,400,350,19};
 
             double[,] POINTS = graphPoints(a, d);
-
-            foreach (double p in POINTS)
-            {
-                Console.WriteLine(p.ToString());
-            }
 
             // Create array of points that define lines to draw.
 
@@ -182,11 +176,6 @@ namespace GEIST
             {
                 xcoord = (int)(1080 * POINTS[i, 0] + 134);
                 ycoord = (int)(678 - 221 * POINTS[i, 1] - 49);
-
-                Console.WriteLine("----");
-                Console.WriteLine(xcoord);
-                Console.WriteLine(ycoord);
-
                 points[i] = new Point(xcoord, ycoord);
             }
 
