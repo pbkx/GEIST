@@ -158,7 +158,7 @@ namespace GEIST
         
         private void DrawLinesPoint(object sender, PaintEventArgs e)
         {
-            Pen pen = new Pen(Color.Red, 2);
+            Pen pen = new Pen(Color.Green, 2);
 
             int[] d = { 5, 10, 15, 20, 25,30,35,40,45,50,55,60,65,70,75,80,85,90 };
             int[] a = { 100, 10, 200, 5, 3000, 500, 1235, 4,195,238,1123,1239,844, 600,500,400,350,19};
