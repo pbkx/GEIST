@@ -34,6 +34,11 @@ namespace GEIST
             Controls.Add(searchBox);
 
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.DrawLinesPoint);
+
+            int[] d = { 25, 50, 62, 76, 81 };
+            int[] a = { 25, 22, 35, 100, 19 };
+            
+            graphPoints(a,d);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -89,7 +94,7 @@ namespace GEIST
 
         }
 
-        private Point[] graphPoints(object sender, EventArgs e, int[] amounts, int[] dates)
+        private Point[] graphPoints(int[] amounts, int[] dates)
         {
 
             int mindate = int.MaxValue;
@@ -119,9 +124,29 @@ namespace GEIST
             }
 
 
-            // CHECK DESMOS
-           // Point[] points = 
-                
+            double[] scaledDates = new double[dates.Length];
+
+
+            for (int z = 0; z < scaledDates.Length; z++) {
+                scaledDates[z] = ((double)(dates[z] - mindate) / (maxdate-mindate));
+            }
+
+            double[] scaledAmounts = new double[amounts.Length];
+
+            for (int y = 0; y < scaledAmounts.Length; y++)
+            {
+                scaledAmounts[y] = ((double)(amounts[y] - minamount) / (maxamount-minamount));
+            }
+
+            foreach (double p in scaledAmounts)
+            {
+                Console.WriteLine(p.ToString());
+            }
+
+            foreach (double p in scaledDates)
+            {
+                Console.WriteLine(p.ToString());
+            }
             return null;
         }
         
