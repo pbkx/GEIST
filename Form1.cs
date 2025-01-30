@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -33,12 +34,11 @@ namespace GEIST
 
             Controls.Add(searchBox);
 
+
+
+
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.DrawLinesPoint);
 
-            int[] d = { 25, 50, 62, 76, 81 };
-            int[] a = { 25, 22, 35, 100, 19 };
-            
-            graphPoints(a,d);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -94,7 +94,7 @@ namespace GEIST
 
         }
 
-        private Point[] graphPoints(int[] amounts, int[] dates)
+        private double[,] graphPoints(int[] amounts, int[] dates)
         {
 
             int mindate = int.MaxValue;
@@ -147,21 +147,48 @@ namespace GEIST
             {
                 Console.WriteLine(p.ToString());
             }
-            return null;
+           
+            double[,] Points = new double[dates.Length,2];
+            for (int p = 0; p < dates.Length; p++) {
+                Points[p,0] = scaledDates[p];
+                Points[p, 1] = scaledAmounts[p];
+            }
+           
+            return Points;
         }
         
         private void DrawLinesPoint(object sender, PaintEventArgs e)
         {
-            Pen pen = new Pen(Color.Red, 1);
+            Pen pen = new Pen(Color.Red, 2);
+
+            int[] d = { 5, 10, 15, 20, 25 };
+            int[] a = { 100, 10, 200, 5, 300 };
+
+            double[,] POINTS = graphPoints(a, d);
+
+            foreach (double p in POINTS)
+            {
+                Console.WriteLine(p.ToString());
+            }
 
             // Create array of points that define lines to draw.
-            Point[] points =
-                        {
-            new Point(150, 600),
-            new Point(300, 560),
-            new Point(450, 580),
-            new Point(600, 590)
-        };
+
+            Point[] points = new Point[POINTS.Length/2];
+
+            int xcoord = 0;
+            int ycoord = 0;
+
+            for (int i = 0; i < POINTS.Length/2; i++)
+            {
+                xcoord = (int)(1080 * POINTS[i, 0] + 134);
+                ycoord = (int)(678 - 221 * POINTS[i, 1] - 49);
+
+                Console.WriteLine("----");
+                Console.WriteLine(xcoord);
+                Console.WriteLine(ycoord);
+
+                points[i] = new Point(xcoord, ycoord);
+            }
 
             //Draw lines to screen.
             e.Graphics.DrawLines(pen, points);
