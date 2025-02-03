@@ -34,7 +34,11 @@ namespace GEIST
 
             Controls.Add(searchBox);
 
-
+            incomeData = new DataGridView
+            {
+                ForeColor = Color.Black,
+                BackColor = Color.White
+            };
 
 
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.DrawLinesPoint);
@@ -183,5 +187,9 @@ namespace GEIST
             e.Graphics.DrawLines(pen, points);
         }
 
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            
+        }
     }
 }
