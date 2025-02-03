@@ -34,11 +34,13 @@ namespace GEIST
 
             Controls.Add(searchBox);
 
-            incomeData = new DataGridView
+            dataGridView1 = new DataGridView
             {
                 ForeColor = Color.Black,
                 BackColor = Color.White
             };
+
+            populate();
 
 
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.DrawLinesPoint);
@@ -189,7 +191,14 @@ namespace GEIST
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            
+            dataGridView1.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.Fill);
+
+        }
+
+        private void populate()
+        {
+            dataGridView1.Rows[0].Cells[0].Value = "New Value";
+            dataGridView1.UpdateCellValue(0, 0);
         }
     }
 }
