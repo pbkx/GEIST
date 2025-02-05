@@ -197,8 +197,8 @@ namespace GEIST
 
         private void populate()
         {
-            dataGridView1.Rows[0].Cells[0].Value = "New Value";
-            dataGridView1.UpdateCellValue(0, 0);
+            //dataGridView1.Rows[0].Cells[0].Value = "New Value";
+            //dataGridView1.UpdateCellValue(0, 0);
         }
     }
 }
