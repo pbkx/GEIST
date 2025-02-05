@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Spire.Xls;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.Common;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
@@ -34,13 +36,18 @@ namespace GEIST
 
             Controls.Add(searchBox);
 
-            dataGridView1 = new DataGridView
-            {
-                ForeColor = Color.Black,
-                BackColor = Color.White
-            };
+            Workbook workbook = new Workbook();
+            workbook.LoadFromFile(@"C:\Users\s114150\Downloads\incomeexpenselist.xlsx");
+            Worksheet worksheet = workbook.Worksheets[0];
 
-            populate();
+            //Export data in the worksheet to a DataTable 
+
+            //This overload enables you to specify the range to be exported along with whether to export column names and the actual values of formulas
+            DataTable dt = worksheet.ExportDataTable(worksheet.Range["A1:E12"], true, true);
+
+            Console.WriteLine(dt.ToString());
+
+            incomeData.DataSource = dt;
 
 
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.DrawLinesPoint);
@@ -161,13 +168,14 @@ namespace GEIST
            
             return Points;
         }
-        
+
         private void DrawLinesPoint(object sender, PaintEventArgs e)
         {
             Pen pen = new Pen(Color.Green, 2);
 
-            int[] d = { 5, 10, 15, 20, 25,30,35,40,45,50,55,60,65,70,75,80,85,90 };
-            int[] a = { 100, 10, 200, 5, 3000, 500, 1235, 4,195,238,1123,1239,844, 600,500,400,350,19};
+            int[] d = {0,1,2,3,4};
+            int[] a = { 0, 1, 2, 3, 4 };
+            
 
             double[,] POINTS = graphPoints(a, d);
 
@@ -191,14 +199,23 @@ namespace GEIST
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            dataGridView1.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.Fill);
+            //na
 
         }
 
-        private void populate()
+        private void button1_Click(object sender, EventArgs e)
         {
-            //dataGridView1.Rows[0].Cells[0].Value = "New Value";
-            //dataGridView1.UpdateCellValue(0, 0);
+            Workbook workbook = new Workbook();
+            workbook.LoadFromFile(@"C:\Users\s114150\Downloads\incomeexpenselist.xlsx");
+            Worksheet worksheet = workbook.Worksheets[0];
+
+            //Export data in the worksheet to a DataTable 
+
+            //This overload enables you to specify the range to be exported along with whether to export column names and the actual values of formulas
+            DataTable dt = worksheet.ExportDataTable(worksheet.Range["A1:E12"], true, true);
+
+            incomeData.DataSource = dt;
         }
+
     }
 }
