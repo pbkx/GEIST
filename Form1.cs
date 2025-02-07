@@ -20,6 +20,8 @@ namespace GEIST
         {
             InitializeComponent();
 
+            this.button1.Click += new EventHandler(button1_Click);
+
             searchBox = new TextBox
             {
                 Text = "Search Income/Expense Data",
@@ -205,17 +207,39 @@ namespace GEIST
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Workbook workbook = new Workbook();
-            workbook.LoadFromFile(@"C:\Users\s114150\Downloads\incomeexpenselist.xlsx");
-            Worksheet worksheet = workbook.Worksheets[0];
+            string searchValue = searchBox.Text;
+            int rowIndex = -1;
 
-            //Export data in the worksheet to a DataTable 
+            incomeData.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 
-            //This overload enables you to specify the range to be exported along with whether to export column names and the actual values of formulas
-            DataTable dt = worksheet.ExportDataTable(worksheet.Range["A1:E12"], true, true);
+            incomeData.AllowUserToAddRows = false;
+            Console.WriteLine("Button Press");
 
-            incomeData.DataSource = dt;
+            CurrencyManager cm = (CurrencyManager)BindingContext[incomeData.DataSource];
+            foreach (DataGridViewRow row in incomeData.Rows)
+            {
+                cm.SuspendBinding();
+                row.Visible = false;
+            }
+
+            foreach (DataGridViewRow row in incomeData.Rows)
+            {
+
+                if (row.Cells[0].Value.ToString().Equals(searchValue) || row.Cells[1].Value.ToString().Equals(searchValue) || row.Cells[2].Value.ToString().Equals(searchValue) || row.Cells[3].Value.ToString().Equals(searchValue) || row.Cells[4].Value.ToString().Equals(searchValue))
+                {
+                    cm.SuspendBinding();
+                    row.Visible = true;
+                    break;
+                }
+            }
+
+            foreach (DataGridViewRow row in incomeData.Rows)
+            {
+                if (searchValue == "")
+                {
+                    row.Visible = true;
+                }
+            }
         }
-
     }
 }
