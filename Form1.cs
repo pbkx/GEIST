@@ -208,7 +208,6 @@ namespace GEIST
         private void button1_Click(object sender, EventArgs e)
         {
             string searchValue = searchBox.Text;
-            int rowIndex = -1;
 
             incomeData.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 
@@ -241,6 +240,9 @@ namespace GEIST
                     row.Visible = true;
                 }
             }
+
+            incomeData.AllowUserToAddRows = true;
+
         }
     }
 }
