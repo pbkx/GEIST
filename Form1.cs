@@ -18,6 +18,7 @@ namespace GEIST
     {
         public Form1()
         {
+
             InitializeComponent();
 
             this.button1.Click += new EventHandler(button1_Click);
@@ -47,12 +48,10 @@ namespace GEIST
             //This overload enables you to specify the range to be exported along with whether to export column names and the actual values of formulas
             DataTable dt = worksheet.ExportDataTable(worksheet.Range["A1:E12"], true, true);
 
-            Console.WriteLine(dt.ToString());
-
-            incomeData.DataSource = dt;
-
-
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.DrawLinesPoint);
+
+            this.Controls.Add(incomeData);
+            incomeData.DataSource = dt;
 
         }
 
@@ -109,13 +108,13 @@ namespace GEIST
 
         }
 
-        private double[,] graphPoints(int[] amounts, int[] dates)
+        private double[,] graphPoints(List<int> amounts, List<int> dates)
         {
 
             int mindate = int.MaxValue;
             int maxdate = int.MinValue;
 
-            for (int i = 0; i < dates.Length; i++) {
+            for (int i = 0; i < dates.Count; i++) {
                 if (dates[i] > maxdate) {
                     maxdate = dates[i];
                 }
@@ -127,7 +126,7 @@ namespace GEIST
             int minamount = int.MaxValue;
             int maxamount = int.MinValue;
 
-            for (int i = 0; i < amounts.Length; i++) {
+            for (int i = 0; i < amounts.Count; i++) {
                 if (amounts[i] > maxamount)
                 {
                     maxamount = amounts[i];
@@ -138,32 +137,22 @@ namespace GEIST
                 }
             }
 
-            double[] scaledDates = new double[dates.Length];
+            double[] scaledDates = new double[dates.Count];
 
 
             for (int z = 0; z < scaledDates.Length; z++) {
                 scaledDates[z] = ((double)(dates[z] - mindate) / (maxdate-mindate));
             }
 
-            double[] scaledAmounts = new double[amounts.Length];
+            double[] scaledAmounts = new double[amounts.Count];
 
             for (int y = 0; y < scaledAmounts.Length; y++)
             {
                 scaledAmounts[y] = ((double)(amounts[y] - minamount) / (maxamount-minamount));
             }
-
-            foreach (double p in scaledAmounts)
-            {
-                Console.WriteLine(p.ToString());
-            }
-
-            foreach (double p in scaledDates)
-            {
-                Console.WriteLine(p.ToString());
-            }
            
-            double[,] Points = new double[dates.Length,2];
-            for (int p = 0; p < dates.Length; p++) {
+            double[,] Points = new double[dates.Count, 2];
+            for (int p = 0; p < dates.Count; p++) {
                 Points[p,0] = scaledDates[p];
                 Points[p, 1] = scaledAmounts[p];
             }
@@ -175,8 +164,24 @@ namespace GEIST
         {
             Pen pen = new Pen(Color.Green, 2);
 
-            int[] d = {0,1,2,3,4};
-            int[] a = { 0, 1, 2, 3, 4 };
+            List<int> d = new List<int>();
+            List<int> a = new List<int>();
+
+            foreach (DataGridViewRow row in incomeData.Rows)
+            {
+
+                if (row.Visible)
+                {
+
+                    if (row.Cells[0].Value != null && row.Cells[3].Value != null)
+                    {
+                        d.Add(Int32.Parse(row.Cells[0].Value.ToString()));
+                        a.Add(Int32.Parse(row.Cells[3].Value.ToString()));
+                    }
+                }
+            }
+
+
             
 
             double[,] POINTS = graphPoints(a, d);
@@ -212,7 +217,6 @@ namespace GEIST
             incomeData.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 
             incomeData.AllowUserToAddRows = false;
-            Console.WriteLine("Button Press");
 
             CurrencyManager cm = (CurrencyManager)BindingContext[incomeData.DataSource];
             foreach (DataGridViewRow row in incomeData.Rows)
@@ -227,8 +231,15 @@ namespace GEIST
 
                 if (row.Cells[0].Value.ToString().Equals(searchValue) || row.Cells[1].Value.ToString().Equals(searchValue) || row.Cells[2].Value.ToString().Equals(searchValue) || row.Cells[3].Value.ToString().Equals(searchValue) || row.Cells[4].Value.ToString().Equals(searchValue))
                 {
+                    var sb = new StringBuilder();
+                    
                     cm.SuspendBinding();
                     row.Visible = true;
+                    sb.Append(row.Cells[0].Value.ToString());
+                    sb.Append(", ");
+                    sb.Append(row.Cells[3].Value.ToString());
+
+                    Console.WriteLine(sb.ToString());
                     cm.ResumeBinding();
                 }
             }
@@ -241,7 +252,14 @@ namespace GEIST
                 }
             }
 
+            cm.SuspendBinding();
+            this.Invalidate();
+            cm.ResumeBinding();
+
             incomeData.AllowUserToAddRows = true;
+
+
+
 
         }
     }
