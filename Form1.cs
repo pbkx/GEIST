@@ -94,7 +94,7 @@ namespace GEIST
         {
             if (string.IsNullOrWhiteSpace(searchBox.Text))
             {
-                searchBox.Text = "🔍 Search Income/Expense Data";
+                searchBox.Text = "Search Income/Expense Data";
                 searchBox.ForeColor = Color.Gray;
             }
         }
@@ -220,6 +220,7 @@ namespace GEIST
             {
                 cm.SuspendBinding();
                 row.Visible = false;
+                cm.ResumeBinding();
             }
 
             foreach (DataGridViewRow row in incomeData.Rows)
@@ -229,13 +230,13 @@ namespace GEIST
                 {
                     cm.SuspendBinding();
                     row.Visible = true;
-                    break;
+                    cm.ResumeBinding();
                 }
             }
 
             foreach (DataGridViewRow row in incomeData.Rows)
             {
-                if (searchValue == "")
+                if (searchValue == "Search Income/Expense Data")
                 {
                     row.Visible = true;
                 }
