@@ -1,4 +1,5 @@
 ﻿using Spire.Xls;
+using Spire.Xls.AI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,6 +12,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Schema;
+using System.IO;
+using ClosedXML.Excel;
+using System.Data.SqlClient;
 
 namespace GEIST
 {
@@ -19,9 +23,12 @@ namespace GEIST
         public Form1()
         {
 
+
+
             InitializeComponent();
 
             this.button1.Click += new EventHandler(button1_Click);
+            this.button2.Click += new EventHandler(button2_Click);
             this.button3.Click += new EventHandler(button3_Click);
 
             searchBox = new TextBox
@@ -31,7 +38,7 @@ namespace GEIST
                 BackColor = Color.Black,
                 BorderStyle = BorderStyle.Fixed3D,
                 Width = 1047,
-                
+
                 Location = new Point(167, 3)
             };
 
@@ -120,11 +127,14 @@ namespace GEIST
             int mindate = int.MaxValue;
             int maxdate = int.MinValue;
 
-            for (int i = 0; i < dates.Count; i++) {
-                if (dates[i] > maxdate) {
+            for (int i = 0; i < dates.Count; i++)
+            {
+                if (dates[i] > maxdate)
+                {
                     maxdate = dates[i];
                 }
-                if (dates[i] < mindate) {
+                if (dates[i] < mindate)
+                {
                     mindate = dates[i];
                 }
             }
@@ -132,7 +142,8 @@ namespace GEIST
             int minamount = int.MaxValue;
             int maxamount = int.MinValue;
 
-            for (int i = 0; i < amounts.Count; i++) {
+            for (int i = 0; i < amounts.Count; i++)
+            {
                 if (amounts[i] > maxamount)
                 {
                     maxamount = amounts[i];
@@ -146,23 +157,25 @@ namespace GEIST
             double[] scaledDates = new double[dates.Count];
 
 
-            for (int z = 0; z < scaledDates.Length; z++) {
-                scaledDates[z] = ((double)(dates[z] - mindate) / (maxdate-mindate));
+            for (int z = 0; z < scaledDates.Length; z++)
+            {
+                scaledDates[z] = ((double)(dates[z] - mindate) / (maxdate - mindate));
             }
 
             double[] scaledAmounts = new double[amounts.Count];
 
             for (int y = 0; y < scaledAmounts.Length; y++)
             {
-                scaledAmounts[y] = ((double)(amounts[y] - minamount) / (maxamount-minamount));
+                scaledAmounts[y] = ((double)(amounts[y] - minamount) / (maxamount - minamount));
             }
-           
+
             double[,] Points = new double[dates.Count, 2];
-            for (int p = 0; p < dates.Count; p++) {
-                Points[p,0] = scaledDates[p];
+            for (int p = 0; p < dates.Count; p++)
+            {
+                Points[p, 0] = scaledDates[p];
                 Points[p, 1] = scaledAmounts[p];
             }
-           
+
             return Points;
         }
 
@@ -190,7 +203,7 @@ namespace GEIST
                         {
                             System.Console.WriteLine("Error.");
                         }
-                        
+
                     }
                 }
             }
@@ -199,12 +212,12 @@ namespace GEIST
 
             // Create array of points that define lines to draw.
 
-            Point[] points = new Point[POINTS.Length/2];
+            Point[] points = new Point[POINTS.Length / 2];
 
             int xcoord = 0;
             int ycoord = 0;
 
-            for (int i = 0; i < POINTS.Length/2; i++)
+            for (int i = 0; i < POINTS.Length / 2; i++)
             {
                 xcoord = (int)(1080 * POINTS[i, 0] + 134);
                 ycoord = (int)(678 - 221 * POINTS[i, 1] - 49);
@@ -251,7 +264,7 @@ namespace GEIST
                 if (row.Cells[0].Value.ToString().Equals(searchValue) || row.Cells[1].Value.ToString().Equals(searchValue) || row.Cells[2].Value.ToString().Equals(searchValue) || row.Cells[3].Value.ToString().Equals(searchValue) || row.Cells[4].Value.ToString().Equals(searchValue))
                 {
                     var sb = new StringBuilder();
-                    
+
                     cm.SuspendBinding();
                     row.Visible = true;
                     sb.Append(row.Cells[0].Value.ToString());
@@ -295,15 +308,19 @@ namespace GEIST
         private void button3_Click(object sender, EventArgs e)
         {
             Workbook workbook = new Workbook();
-            try {
+            try
+            {
                 workbook.LoadFromFile(textBox2.Text);
-            } catch {
+            }
+            catch
+            {
                 System.Console.WriteLine("No excel sheet input");
             }
-            
+
             Worksheet worksheet = workbook.Worksheets[0];
 
-            try {
+            try
+            {
                 DataTable dt = worksheet.ExportDataTable(worksheet.Range[textBox1.Text], true, true);
                 incomeData.DataSource = dt;
             }
@@ -318,5 +335,44 @@ namespace GEIST
         {
 
         }
+
+
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
+            System.Console.WriteLine("Yo");
+            DataTable DD = new DataTable();
+            incomeData.AllowUserToAddRows = false;
+            CurrencyManager cm = (CurrencyManager)BindingContext[incomeData.DataSource];
+            cm.SuspendBinding();
+            foreach (DataGridViewColumn column in incomeData.Columns)
+            {
+                DD.Columns.Add(column.HeaderText, column.ValueType);
+            }
+
+
+            foreach (DataGridViewRow row in incomeData.Rows)
+            {
+                DD.Rows.Add();
+                foreach (DataGridViewCell cell in row.Cells)
+                {
+                    DD.Rows[DD.Rows.Count - 1][cell.ColumnIndex] = cell.Value.ToString();
+                }
+            }
+
+            string folderPath = "C:\\Users\\s114150\\Desktop";
+
+            using (XLWorkbook wb = new XLWorkbook())
+            {
+                wb.Worksheets.Add(DD, "ExportData");
+                System.Console.WriteLine(wb.ToString());
+                wb.SaveAs(folderPath + "DataGridViewExport.xlsx");
+            }
+
+            cm.ResumeBinding();
+            incomeData.AllowUserToAddRows = true;
+        }
     }
 }
+
