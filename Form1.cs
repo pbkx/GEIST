@@ -22,6 +22,7 @@ namespace GEIST
             InitializeComponent();
 
             this.button1.Click += new EventHandler(button1_Click);
+            this.button3.Click += new EventHandler(button3_Click);
 
             searchBox = new TextBox
             {
@@ -40,19 +41,24 @@ namespace GEIST
             Controls.Add(searchBox);
 
             Workbook workbook = new Workbook();
-            workbook.LoadFromFile(@"C:\Users\s114150\Downloads\incomeexpenselist.xlsx");
+            workbook.LoadFromFile(@"C:\Users\s114150\Downloads\defaultData.xlsx");
             Worksheet worksheet = workbook.Worksheets[0];
 
             //Export data in the worksheet to a DataTable 
 
             //This overload enables you to specify the range to be exported along with whether to export column names and the actual values of formulas
-            DataTable dt = worksheet.ExportDataTable(worksheet.Range["A1:E12"], true, true);
+            DataTable dt = worksheet.ExportDataTable(worksheet.Range["A1:E7"], true, true);
 
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.DrawLinesPoint);
 
             this.Controls.Add(incomeData);
             incomeData.DataSource = dt;
 
+        }
+
+        private void Button3_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -175,14 +181,19 @@ namespace GEIST
 
                     if (row.Cells[0].Value != null && row.Cells[3].Value != null)
                     {
-                        d.Add(Int32.Parse(row.Cells[0].Value.ToString()));
-                        a.Add(Int32.Parse(row.Cells[3].Value.ToString()));
+                        try
+                        {
+                            d.Add(Int32.Parse(row.Cells[0].Value.ToString()));
+                            a.Add(Int32.Parse(row.Cells[3].Value.ToString()));
+                        }
+                        catch
+                        {
+                            System.Console.WriteLine("Error.");
+                        }
+                        
                     }
                 }
             }
-
-
-            
 
             double[,] POINTS = graphPoints(a, d);
 
@@ -201,7 +212,15 @@ namespace GEIST
             }
 
             //Draw lines to screen.
-            e.Graphics.DrawLines(pen, points);
+
+            try
+            {
+                e.Graphics.DrawLines(pen, points);
+            }
+            catch
+            {
+                System.Console.WriteLine("Not enough points.");
+            }
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -260,6 +279,43 @@ namespace GEIST
 
 
 
+
+        }
+
+        private void textBox1_TextChanged_2(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Workbook workbook = new Workbook();
+            try {
+                workbook.LoadFromFile(textBox2.Text);
+            } catch {
+                System.Console.WriteLine("No excel sheet input");
+            }
+            
+            Worksheet worksheet = workbook.Worksheets[0];
+
+            try {
+                DataTable dt = worksheet.ExportDataTable(worksheet.Range[textBox1.Text], true, true);
+                incomeData.DataSource = dt;
+            }
+            catch
+            {
+                System.Console.WriteLine("No bounds input");
+            }
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
 
         }
     }
