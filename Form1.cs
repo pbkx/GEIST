@@ -360,6 +360,8 @@ namespace GEIST
                 {
                     DD.Rows[DD.Rows.Count - 1][cell.ColumnIndex] = cell.Value.ToString();
                 }
+
+
             }
 
             string folderPath = "C:\\Users\\s114150\\Downloads\\";
@@ -368,7 +370,7 @@ namespace GEIST
             {
                 wb.Worksheets.Add(DD, "ExportData");
                 System.Console.WriteLine("EXPORTED");
-                wb.SaveAs(folderPath + "DataGridViewExport.xlsx");
+                wb.SaveAs(folderPath + "GEISTApp_DownloadSheet.xlsx");
             }
 
             cm.ResumeBinding();
