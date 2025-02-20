@@ -349,6 +349,7 @@ namespace GEIST
             foreach (DataGridViewColumn column in incomeData.Columns)
             {
                 DD.Columns.Add(column.HeaderText, column.ValueType);
+
             }
 
 
