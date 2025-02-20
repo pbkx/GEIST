@@ -176,6 +176,11 @@ namespace GEIST
                 Points[p, 1] = scaledAmounts[p];
             }
 
+            textBox3.Text = maxamount.ToString();
+            textBox4.Text = minamount.ToString();
+            textBox5.Text = mindate.ToString();
+            textBox6.Text = maxdate.ToString();
+
             return Points;
         }
 
@@ -375,6 +380,26 @@ namespace GEIST
 
             cm.ResumeBinding();
             incomeData.AllowUserToAddRows = true;
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox5_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
