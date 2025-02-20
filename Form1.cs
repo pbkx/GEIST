@@ -15,6 +15,7 @@ using System.Xml.Schema;
 using System.IO;
 using ClosedXML.Excel;
 using System.Data.SqlClient;
+using System.Globalization;
 
 namespace GEIST
 {
@@ -55,6 +56,25 @@ namespace GEIST
 
             //This overload enables you to specify the range to be exported along with whether to export column names and the actual values of formulas
             DataTable dt = worksheet.ExportDataTable(worksheet.Range["A1:E7"], true, true);
+
+
+            // Convert Unix timestamps to human-readable dates in the DataTable
+            foreach (DataRow row in dt.Rows)
+            {
+                string dateValue = row["Date"].ToString();
+                if (double.TryParse(dateValue, out double unixTimeStamp))
+                {
+                    row["Date"] = DateConverter.UnixTimeStampToDate(unixTimeStamp);
+                }
+                else if (DateTime.TryParse(dateValue, out DateTime _))
+                {
+                    row["Date"] = DateConverter.NormalizeDate(dateValue);
+                }
+                else
+                {
+                    MessageBox.Show($"Invalid date or Unix timestamp: {row["Date"]}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
 
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.DrawLinesPoint);
 
@@ -121,53 +141,29 @@ namespace GEIST
 
         }
 
-        private double[,] graphPoints(List<int> amounts, List<int> dates)
+        private double[,] graphPoints(List<int> amounts, List<string> dates)
         {
-
-            int mindate = int.MaxValue;
-            int maxdate = int.MinValue;
-
-            for (int i = 0; i < dates.Count; i++)
+            List<int> unixDates = new List<int>();
+            foreach (string date in dates)
             {
-                if (dates[i] > maxdate)
+                try
                 {
-                    maxdate = dates[i];
+                    unixDates.Add((int)DateConverter.DateToUnixTimeStamp(DateConverter.NormalizeDate(date)));
                 }
-                if (dates[i] < mindate)
+                catch (FormatException)
                 {
-                    mindate = dates[i];
+                    MessageBox.Show($"Invalid date format: {date}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    continue;
                 }
             }
 
-            int minamount = int.MaxValue;
-            int maxamount = int.MinValue;
+            int mindate = unixDates.Min();
+            int maxdate = unixDates.Max();
+            int minamount = amounts.Min();
+            int maxamount = amounts.Max();
 
-            for (int i = 0; i < amounts.Count; i++)
-            {
-                if (amounts[i] > maxamount)
-                {
-                    maxamount = amounts[i];
-                }
-                if (amounts[i] < minamount)
-                {
-                    minamount = amounts[i];
-                }
-            }
-
-            double[] scaledDates = new double[dates.Count];
-
-
-            for (int z = 0; z < scaledDates.Length; z++)
-            {
-                scaledDates[z] = ((double)(dates[z] - mindate) / (maxdate - mindate));
-            }
-
-            double[] scaledAmounts = new double[amounts.Count];
-
-            for (int y = 0; y < scaledAmounts.Length; y++)
-            {
-                scaledAmounts[y] = ((double)(amounts[y] - minamount) / (maxamount - minamount));
-            }
+            double[] scaledDates = unixDates.Select(date => (double)(date - mindate) / (maxdate - mindate)).ToArray();
+            double[] scaledAmounts = amounts.Select(amount => (double)(amount - minamount) / (maxamount - minamount)).ToArray();
 
             double[,] Points = new double[dates.Count, 2];
             for (int p = 0; p < dates.Count; p++)
@@ -178,37 +174,35 @@ namespace GEIST
 
             textBox3.Text = maxamount.ToString();
             textBox4.Text = minamount.ToString();
-            textBox5.Text = mindate.ToString();
-            textBox6.Text = maxdate.ToString();
+            textBox5.Text = DateConverter.UnixTimeStampToDate(mindate);
+            textBox6.Text = DateConverter.UnixTimeStampToDate(maxdate);
 
             return Points;
         }
+
 
         private void DrawLinesPoint(object sender, PaintEventArgs e)
         {
             Pen pen = new Pen(Color.Green, 2);
 
-            List<int> d = new List<int>();
+            List<string> d = new List<string>();
             List<int> a = new List<int>();
 
             foreach (DataGridViewRow row in incomeData.Rows)
             {
-
                 if (row.Visible)
                 {
-
                     if (row.Cells[0].Value != null && row.Cells[3].Value != null)
                     {
                         try
                         {
-                            d.Add(Int32.Parse(row.Cells[0].Value.ToString()));
+                            d.Add(row.Cells[0].Value.ToString());
                             a.Add(Int32.Parse(row.Cells[3].Value.ToString()));
                         }
                         catch
                         {
                             System.Console.WriteLine("Error.");
                         }
-
                     }
                 }
             }
@@ -327,13 +321,31 @@ namespace GEIST
             try
             {
                 DataTable dt = worksheet.ExportDataTable(worksheet.Range[textBox1.Text], true, true);
+
+                // Convert Unix timestamps to human-readable dates in the DataTable
+                foreach (DataRow row in dt.Rows)
+                {
+                    string dateValue = row["Date"].ToString();
+                    if (double.TryParse(dateValue, out double unixTimeStamp))
+                    {
+                        row["Date"] = DateConverter.UnixTimeStampToDate(unixTimeStamp);
+                    }
+                    else if (DateTime.TryParse(dateValue, out DateTime _))
+                    {
+                        row["Date"] = DateConverter.NormalizeDate(dateValue);
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Invalid date or Unix timestamp: {row["Date"]}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+
                 incomeData.DataSource = dt;
             }
             catch
             {
                 System.Console.WriteLine("No bounds input");
             }
-
         }
 
         private void label3_Click(object sender, EventArgs e)
@@ -341,12 +353,8 @@ namespace GEIST
 
         }
 
-
-
         private void button2_Click(object sender, EventArgs e)
         {
-
-            System.Console.WriteLine("Yo");
             DataTable DD = new DataTable();
             incomeData.AllowUserToAddRows = false;
             CurrencyManager cm = (CurrencyManager)BindingContext[incomeData.DataSource];
@@ -354,9 +362,7 @@ namespace GEIST
             foreach (DataGridViewColumn column in incomeData.Columns)
             {
                 DD.Columns.Add(column.HeaderText, column.ValueType);
-
             }
-
 
             foreach (DataGridViewRow row in incomeData.Rows)
             {
@@ -365,8 +371,15 @@ namespace GEIST
                 {
                     DD.Rows[DD.Rows.Count - 1][cell.ColumnIndex] = cell.Value.ToString();
                 }
+            }
 
-
+            // Convert human-readable dates to Unix timestamps for export
+            foreach (DataRow row in DD.Rows)
+            {
+                if (DateTime.TryParse(row["Date"].ToString(), out DateTime dateValue))
+                {
+                    row["Date"] = DateConverter.DateToUnixTimeStamp(DateConverter.NormalizeDate(row["Date"].ToString())).ToString();
+                }
             }
 
             string folderPath = "C:\\Users\\s114150\\Downloads\\";
@@ -381,6 +394,7 @@ namespace GEIST
             cm.ResumeBinding();
             incomeData.AllowUserToAddRows = true;
         }
+
 
         private void label7_Click(object sender, EventArgs e)
         {
@@ -402,5 +416,38 @@ namespace GEIST
 
         }
     }
+
+    public class DateConverter
+    {
+        // Convert Unix timestamp to human-readable date format (MM/dd/yyyy)
+        public static string UnixTimeStampToDate(double unixTimeStamp)
+        {
+            // Unix timestamp is seconds past epoch
+            DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds((long)unixTimeStamp).DateTime;
+            return dateTime.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
+        }
+
+        // Convert human-readable date format (MM/dd/yyyy) to Unix timestamp
+        public static double DateToUnixTimeStamp(string date)
+        {
+            DateTime dateTime = DateTime.ParseExact(date, "MM/dd/yyyy", CultureInfo.InvariantCulture);
+            return ((DateTimeOffset)dateTime).ToUnixTimeSeconds();
+        }
+
+        // Normalize date to MM/dd/yyyy format
+        public static string NormalizeDate(string date)
+        {
+            DateTime dateTime;
+            if (DateTime.TryParse(date, out dateTime))
+            {
+                return dateTime.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
+            }
+            else
+            {
+                throw new FormatException($"Invalid date format: {date}");
+            }
+        }
+    }
 }
+
 
