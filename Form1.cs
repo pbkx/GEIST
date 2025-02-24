@@ -23,9 +23,6 @@ namespace GEIST
     {
         public Form1()
         {
-
-
-
             InitializeComponent();
 
             this.button1.Click += new EventHandler(button1_Click);
@@ -52,13 +49,8 @@ namespace GEIST
             workbook.LoadFromFile(@"C:\Users\s114150\Downloads\defaultData.xlsx");
             Worksheet worksheet = workbook.Worksheets[0];
 
-            //Export data in the worksheet to a DataTable 
-
-            //This overload enables you to specify the range to be exported along with whether to export column names and the actual values of formulas
             DataTable dt = worksheet.ExportDataTable(worksheet.Range["A1:E7"], true, true);
 
-
-            // Convert Unix timestamps to human-readable dates in the DataTable
             foreach (DataRow row in dt.Rows)
             {
                 string dateValue = row["Date"].ToString();
@@ -72,7 +64,7 @@ namespace GEIST
                 }
                 else
                 {
-                    MessageBox.Show($"Invalid date or Unix timestamp: {row["Date"]}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                   Console.WriteLine($"Invalid date or Unix timestamp: {row["Date"]}");
                 }
             }
 
@@ -221,8 +213,6 @@ namespace GEIST
 
             double[,] POINTS = graphPoints(a, d);
 
-            // Create array of points that define lines to draw.
-
             Point[] points = new Point[POINTS.Length / 2];
 
             int xcoord = 0;
@@ -234,8 +224,6 @@ namespace GEIST
                 ycoord = (int)(678 - 221 * POINTS[i, 1] - 49);
                 points[i] = new Point(xcoord, ycoord);
             }
-
-            //Draw lines to screen.
 
             try
             {
@@ -249,7 +237,6 @@ namespace GEIST
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            //na
 
         }
 
@@ -301,9 +288,6 @@ namespace GEIST
 
             incomeData.AllowUserToAddRows = true;
 
-
-
-
         }
 
         private void textBox1_TextChanged_2(object sender, EventArgs e)
@@ -334,7 +318,6 @@ namespace GEIST
             {
                 DataTable dt = worksheet.ExportDataTable(worksheet.Range[textBox1.Text], true, true);
 
-                // Convert Unix timestamps to human-readable dates in the DataTable
                 foreach (DataRow row in dt.Rows)
                 {
                     string dateValue = row["Date"].ToString();
@@ -385,8 +368,6 @@ namespace GEIST
                 }
             }
 
-            // Convert human-readable dates to Unix timestamps for export
-
             string folderPath = "C:\\Users\\s114150\\Downloads\\";
 
             using (XLWorkbook wb = new XLWorkbook())
@@ -424,22 +405,18 @@ namespace GEIST
 
     public class DateConverter
     {
-        // Convert Unix timestamp to human-readable date format (MM/dd/yyyy)
         public static string UnixTimeStampToDate(double unixTimeStamp)
         {
-            // Unix timestamp is seconds past epoch
             DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds((long)unixTimeStamp).DateTime;
             return dateTime.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
         }
 
-        // Convert human-readable date format (MM/dd/yyyy) to Unix timestamp
         public static double DateToUnixTimeStamp(string date)
         {
             DateTime dateTime = DateTime.ParseExact(date, "MM/dd/yyyy", CultureInfo.InvariantCulture);
             return ((DateTimeOffset)dateTime).ToUnixTimeSeconds();
         }
 
-        // Normalize date to MM/dd/yyyy format
         public static string NormalizeDate(string date)
         {
             DateTime dateTime;
