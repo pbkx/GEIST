@@ -152,9 +152,15 @@ namespace GEIST
                 }
                 catch (FormatException)
                 {
-                    MessageBox.Show($"Invalid date format: {date}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Console.WriteLine($"Invalid date format: {date}");
                     continue;
                 }
+            }
+
+            if (unixDates.Count != dates.Count)
+            {
+                Console.WriteLine("Mismatch between dates and converted Unix dates count.");
+                return new double[0, 0];
             }
 
             int mindate = unixDates.Min();
@@ -164,6 +170,12 @@ namespace GEIST
 
             double[] scaledDates = unixDates.Select(date => (double)(date - mindate) / (maxdate - mindate)).ToArray();
             double[] scaledAmounts = amounts.Select(amount => (double)(amount - minamount) / (maxamount - minamount)).ToArray();
+
+            if (scaledDates.Length != dates.Count || scaledAmounts.Length != dates.Count)
+            {
+                Console.WriteLine("Mismatch between dates, scaledDates, or scaledAmounts count.");
+                return new double[0, 0];
+            }
 
             double[,] Points = new double[dates.Count, 2];
             for (int p = 0; p < dates.Count; p++)
@@ -336,7 +348,7 @@ namespace GEIST
                     }
                     else
                     {
-                        MessageBox.Show($"Invalid date or Unix timestamp: {row["Date"]}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Console.WriteLine($"Invalid date or Unix timestamp: {row["Date"]}");
                     }
                 }
 
@@ -374,13 +386,6 @@ namespace GEIST
             }
 
             // Convert human-readable dates to Unix timestamps for export
-            foreach (DataRow row in DD.Rows)
-            {
-                if (DateTime.TryParse(row["Date"].ToString(), out DateTime dateValue))
-                {
-                    row["Date"] = DateConverter.DateToUnixTimeStamp(DateConverter.NormalizeDate(row["Date"].ToString())).ToString();
-                }
-            }
 
             string folderPath = "C:\\Users\\s114150\\Downloads\\";
 
